@@ -12,3 +12,48 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id            Int           @id @default(autoincrement())
+  fName         String        @db.VarChar(100)
+  lName         String        @db.VarChar(100)
+  email         String        @unique @db.VarChar(100)
+  password      String        @db.VarChar(255)
+  birthDate     String        @db.VarChar(20)
+  ethnicity     Ethnicity
+  maritalStatus MaritalStatus
+  CPF           String        @db.VarChar(20)
+  address       Address       @relation(fields: [addressId], references: [id])
+  addressId     Int
+}
+
+model Address {
+  id           Int     @id @default(autoincrement())
+  CEP          Int
+  numberHouse  Int
+  complement   String? @db.VarChar(100)
+  street       String  @db.VarChar(100)
+  neighborhood String  @db.VarChar(100)
+  city         String  @db.VarChar(100)
+  state        String  @db.VarChar(100)
+  User         User[]
+}
+
+enum Ethnicity {
+  White
+  Black
+  Asian
+  Latino
+  MixedRace
+  Other
+}
+
+enum MaritalStatus {
+  Single
+  Married
+  Divorced
+  Widowed
+  Separated
+  DomesticPartnership
+  Other
+}
