@@ -35,3 +35,14 @@ export interface IUserCreationResponse {
         state: string;
     };
 }
+
+export interface IUpdateUser {
+    fName: string;
+    lName: string;
+    email: string;
+    birthDate: string;
+    ethnicity: "White" | "Black" | "Asian" | "Latino" | "MixedRace" | "Other";
+    maritalStatus: "Single" | "Married" | "Divorced" | "Widowed" | "Separated" | "DomesticPartnership" | "Other";
+    CPF: string;
+    address: address;
+}

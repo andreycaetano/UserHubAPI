@@ -1,8 +1,9 @@
 import { injectable } from "tsyringe";
 import bcrypt, { hash } from 'bcrypt';
-import { ICreateUser, IUserCreationResponse } from "../interface/user.interface";
+import { ICreateUser, IUpdateUser, IUserCreationResponse } from "../interface/user.interface";
 import { ViaCep } from "../services/viaCep.services";
 import { prisma } from "../database/index.database";
+import { AppErrors } from "../errors/app.errors";
 
 @injectable()
 export class UserCore {
@@ -61,5 +62,51 @@ export class UserCore {
             }
         })
         return findUsers
+    }
+
+    async updateUser (userId: number, data: IUpdateUser): Promise<IUserCreationResponse> {
+        const findUser = prisma.user.findFirst({ where: { id: userId } })
+        if(!findUser) throw new AppErrors(404, "User not found.")
+        const address = await ViaCep.getAddressByCep(data.address.cep);
+        const user = await prisma.user.update({
+            where: {
+                id: userId
+            },
+            data: {
+                ...data.address && {
+                    address: {
+                        update: {
+                            ...(address.cep && { CEP: Number(address.cep) }),
+                            ...(data.address.numberHouse && { numberHouse: Number(data.address.numberHouse) }),
+                            ...(data.address.complement && { complement: data.address.complement }),
+                            ...(address.street && { street: address.street }),
+                            ...(address.neighborhood && { neighborhood: address.neighborhood }),
+                            ...(address.city && { city: address.city }),
+                            ...(address.state && { state: address.state }),
+                        }
+                    }
+                },
+                ...data.fName && { fName: data.fName },
+                ...data.lName && { lName: data.lName },
+                ...data.email && { email: data.email },
+                ...data.birthDate && { birthDate: data.birthDate },
+                ...data.ethnicity && { ethnicity: data.ethnicity },
+                ...data.maritalStatus && { maritalStatus: data.maritalStatus },
+                ...data.CPF && { CPF: data.CPF }
+            },
+            select: {
+                id: true,
+                fName: true,
+                lName: true,
+                email: true,
+                birthDate: true,
+                ethnicity: true,
+                maritalStatus: true,
+                CPF: true,
+                address: true
+            }
+        });
+        
+        return user;
     }
 }

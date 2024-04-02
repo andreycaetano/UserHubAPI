@@ -15,4 +15,9 @@ export class UserController {
         const findUsers = await this.UserCore.getAll()
         return res.status(200).json(findUsers)
     }
+
+    async updateUser (req: Request, res: Response) {
+        const updatedUser = await this.UserCore.updateUser(Number(req.params.id), req.body)
+        return res.status(200).json(updatedUser)
+    }
 }

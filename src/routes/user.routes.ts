@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { container } from "tsyringe";
 import { Validates } from "../middlewares/validates.middlewares";
-import { userSchema } from "../schemas/user.schemas";
+import { updateUserSchema, userSchema } from "../schemas/user.schemas";
 import { UserController } from "../controller/user.controller";
 
 export const userRoutes = Router();
@@ -17,4 +17,10 @@ userRoutes.post("/register",
 
 userRoutes.get("/",
     (req, res) => controller.getAll(req, res)
+)
+
+userRoutes.patch("/:id",
+    validates.validateBody({ body: updateUserSchema }),
+    (req) => validates.CPFValidator(req.body.CPF),
+    (req, res) => controller.updateUser(req, res)
 )
