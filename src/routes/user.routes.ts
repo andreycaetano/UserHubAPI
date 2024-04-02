@@ -6,11 +6,15 @@ import { UserController } from "../controller/user.controller";
 
 export const userRoutes = Router();
 
-const validates = container.resolve(Validates)
-const controller = container.resolve(UserController)
+const validates = container.resolve(Validates);
+const controller = container.resolve(UserController);
 
 userRoutes.post("/register",
-    validates.validateBody({body: userSchema}),
+    validates.validateBody({ body: userSchema }),
     (req) => validates.CPFValidator(req.body.CPF),
     (req, res) => controller.register(req, res)
 );
+
+userRoutes.get("/",
+    (req, res) => controller.getAll(req, res)
+)

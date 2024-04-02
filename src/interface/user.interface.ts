@@ -1,4 +1,4 @@
-export interface IUser {
+export interface ICreateUser {
     fName: string;
     lName: string;
     email: string;
@@ -14,4 +14,24 @@ interface address {
     cep: string;
     numberHouse: number;
     complement: string | null;
+}
+
+export interface IUserCreationResponse {
+    id: number;
+    fName: string;
+    lName: string;
+    email: string;
+    birthDate: string;
+    ethnicity: string;
+    maritalStatus: string;
+    CPF: string;
+    address: {
+        CEP: number;
+        numberHouse: number;
+        complement: string | null;
+        street: string;
+        neighborhood: string;
+        city: string;
+        state: string;
+    };
 }
