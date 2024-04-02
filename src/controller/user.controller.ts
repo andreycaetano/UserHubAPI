@@ -20,4 +20,9 @@ export class UserController {
         const updatedUser = await this.UserCore.updateUser(Number(req.params.id), req.body)
         return res.status(200).json(updatedUser)
     }
+
+    async login (req: Request, res: Response) {
+        const login = await this.UserCore.login(req.body)
+        return res.status(200).json(login)
+    }
 }

@@ -1,3 +1,6 @@
+import { z } from "zod";
+import { loginSchema } from "../schemas/user.schemas";
+
 export interface ICreateUser {
     fName: string;
     lName: string;
@@ -37,12 +40,15 @@ export interface IUserCreationResponse {
 }
 
 export interface IUpdateUser {
-    fName: string;
-    lName: string;
-    email: string;
-    birthDate: string;
-    ethnicity: "White" | "Black" | "Asian" | "Latino" | "MixedRace" | "Other";
-    maritalStatus: "Single" | "Married" | "Divorced" | "Widowed" | "Separated" | "DomesticPartnership" | "Other";
-    CPF: string;
-    address: address;
+    fName?: string;
+    lName?: string;
+    email?: string;
+    admin?: boolean
+    birthDate?: string;
+    ethnicity?: "White" | "Black" | "Asian" | "Latino" | "MixedRace" | "Other";
+    maritalStatus?: "Single" | "Married" | "Divorced" | "Widowed" | "Separated" | "DomesticPartnership" | "Other";
+    CPF?: string;
+    address?: address;
 }
+
+export type TLogin = z.infer<typeof loginSchema>

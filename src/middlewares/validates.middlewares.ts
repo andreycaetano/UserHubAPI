@@ -12,7 +12,7 @@ interface IRequestSchemas {
 
 @injectable()
 export class Validates {
-    CPFValidator(CPF: string) {
+    static CPFValidator(CPF: string) {
         return (next: NextFunction) => {
             const clearCPF = CPF.replace(/\D/g, '');
             const verify = cpf.isValid(clearCPF);

@@ -19,6 +19,7 @@ model User {
   lName         String        @db.VarChar(100)
   email         String        @unique @db.VarChar(100)
   password      String        @db.VarChar(255)
+  admin         Boolean       @default(false)
   birthDate     String        @db.VarChar(20)
   ethnicity     Ethnicity
   maritalStatus MaritalStatus
