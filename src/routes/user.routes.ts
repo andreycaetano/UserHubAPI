@@ -20,11 +20,12 @@ userRoutes.get("/",
 );
 
 userRoutes.patch("/:id",
+    (req, res, next) => validates.validateToken(req, res, next),
     validates.validateBody({ body: updateUserSchema }),
     (req, res) => controller.updateUser(req, res)
 );
 
 userRoutes.post("/login",
     validates.validateBody({ body: loginSchema }),
-    
+    (req, res) => controller.login(req, res)
 )

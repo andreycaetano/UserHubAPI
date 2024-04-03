@@ -17,7 +17,7 @@ export class UserController {
     }
 
     async updateUser (req: Request, res: Response) {
-        const updatedUser = await this.UserCore.updateUser(Number(req.params.id), req.body)
+        const updatedUser = await this.UserCore.updateUser(Number(req.params.id), req.body, res.locals.token)
         return res.status(200).json(updatedUser)
     }
 

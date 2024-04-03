@@ -3,6 +3,7 @@ import { AppErrors } from "../errors/app.errors";
 import { injectable } from "tsyringe";
 import { NextFunction, Request, Response } from "express";
 import { AnyZodObject } from "zod";
+import jwt from "jsonwebtoken";
 
 interface IRequestSchemas {
     params?: AnyZodObject;
@@ -36,5 +37,15 @@ export class Validates {
             }
             next();
         };
+    }
+
+    validateToken(req: Request, res: Response, next: NextFunction) {
+        const token = req.headers.authorization
+        if (!token) throw new AppErrors(401, "Token is require")
+        jwt.verify(token, process.env.SECRET_KEY_TOKEN!,function(err, decoded) {
+            if(err) throw new AppErrors(401, "Invalid Token")
+            res.locals.token = decoded
+        })
+        next()
     }
 };

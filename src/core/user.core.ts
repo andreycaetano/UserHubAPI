@@ -66,7 +66,8 @@ export class UserCore {
         return findUsers
     }
 
-    async updateUser(userId: number, data: IUpdateUser): Promise<IUserCreationResponse> {
+    async updateUser(userId: number, data: IUpdateUser, decoded: any): Promise<IUserCreationResponse> {
+        if(decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
         const findUser = await prisma.user.findFirst({ where: { id: userId } })
         if (!findUser) throw new AppErrors(404, "User not found.")
 
@@ -134,10 +135,10 @@ export class UserCore {
             { expiresIn: '1h' }
         )
         return {
+            id: findUser.id,
             user: findUser.email,
             admin: findUser.admin,
             token: token,
         }
     }
-
 }
