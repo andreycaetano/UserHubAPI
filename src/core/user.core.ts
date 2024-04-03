@@ -10,8 +10,9 @@ import { Validates } from "../middlewares/validates.middlewares";
 @injectable()
 export class UserCore {
     async register(data: ICreateUser): Promise<IUserCreationResponse> {
+        data.CPF = Validates.CPFValidator(data.CPF)
         const address = await ViaCep.getAddressByCep(data.address.cep);
-        data.password = await hash(data.password, process.env.SECRET_HASH!);
+        data.password = await hash(data.password, Number(process.env.SECRET_HASH!));
         const user = await prisma.user.create({
             data: {
                 fName: data.fName,
@@ -70,21 +71,23 @@ export class UserCore {
         if(decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
         const findUser = await prisma.user.findFirst({ where: { id: userId } })
         if (!findUser) throw new AppErrors(404, "User not found.")
-
+ 
+        
         let address = null
         if (data.address) {
             address = await ViaCep.getAddressByCep(data.address.cep);
         }
 
         const userDataToUpdate: any = {};
-
+        console.log(address);
+        
         if (data.address) {
             if (address) {
                 userDataToUpdate.address = {
                     update: {
-                        ...(address.cep && { CEP: Number(address.cep) }),
+                        ...(address.cep && { CEP: Number(data.address.cep) }),
                         ...(data.address.numberHouse && { numberHouse: Number(data.address.numberHouse) }),
-                        ...(data.address.complement && { complement: data.address.complement }),
+                        ...(data.address.complement ? { complement: data.address.complement } : {complement: ""}),
                         ...(address.street && { street: address.street }),
                         ...(address.neighborhood && { neighborhood: address.neighborhood }),
                         ...(address.city && { city: address.city }),
@@ -97,12 +100,13 @@ export class UserCore {
         if (data.fName) userDataToUpdate.fName = data.fName;
         if (data.lName) userDataToUpdate.lName = data.lName;
         if (data.email) userDataToUpdate.email = data.email;
+        if (data.password) userDataToUpdate.password = data.password;
         if (data.birthDate) userDataToUpdate.birthDate = data.birthDate;
         if (data.ethnicity) userDataToUpdate.ethnicity = data.ethnicity;
         if (data.maritalStatus) userDataToUpdate.maritalStatus = data.maritalStatus;
         if (data.CPF && Validates.CPFValidator(data.CPF)) userDataToUpdate.CPF = data.CPF;
         if (data.admin) userDataToUpdate.admin = data.admin;
-
+        console.log(userDataToUpdate)
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: userDataToUpdate,
@@ -140,5 +144,12 @@ export class UserCore {
             admin: findUser.admin,
             token: token,
         }
+    }
+
+    async delete (userId: number, decoded: any) {
+        if(decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
+        const findUser = await prisma.user.findFirst({ where: { id: userId } })
+        if (!findUser) throw new AppErrors(404, "User not found.")
+        await prisma.user.delete({ where: { id: userId }})
     }
 }

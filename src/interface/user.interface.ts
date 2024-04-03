@@ -43,6 +43,7 @@ export interface IUpdateUser {
     fName?: string;
     lName?: string;
     email?: string;
+    password?: string;
     admin?: boolean
     birthDate?: string;
     ethnicity?: "White" | "Black" | "Asian" | "Latino" | "MixedRace" | "Other";

@@ -14,12 +14,11 @@ interface IRequestSchemas {
 @injectable()
 export class Validates {
     static CPFValidator(CPF: string) {
-        return (next: NextFunction) => {
-            const clearCPF = CPF.replace(/\D/g, '');
-            const verify = cpf.isValid(clearCPF);
-            if (!verify) throw new AppErrors(400, "CPF invalid");
-            next();
-        };
+        const clearCPF = CPF.replace(/\D/g, '');
+        const verify = cpf.isValid(clearCPF);
+        if (!verify) throw new AppErrors(400, "CPF invalid");
+
+        return clearCPF
     };
 
     validateBody(schemas: IRequestSchemas) {
@@ -40,10 +39,10 @@ export class Validates {
     }
 
     validateToken(req: Request, res: Response, next: NextFunction) {
-        const token = req.headers.authorization
+        const token = req.headers.authorization?.replace("Bearer ", "");
         if (!token) throw new AppErrors(401, "Token is require")
-        jwt.verify(token, process.env.SECRET_KEY_TOKEN!,function(err, decoded) {
-            if(err) throw new AppErrors(401, "Invalid Token")
+        jwt.verify(token, process.env.SECRET_KEY_TOKEN!, function (err, decoded) {
+            if (err) throw new AppErrors(401, "Invalid Token")
             res.locals.token = decoded
         })
         next()

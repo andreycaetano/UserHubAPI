@@ -11,7 +11,6 @@ const controller = container.resolve(UserController);
 
 userRoutes.post("/register",
     validates.validateBody({ body: userSchema }),
-    (req, res) => Validates.CPFValidator(req.body.CPF),
     (req, res) => controller.register(req, res)
 );
 
@@ -28,4 +27,9 @@ userRoutes.patch("/:id",
 userRoutes.post("/login",
     validates.validateBody({ body: loginSchema }),
     (req, res) => controller.login(req, res)
+)
+
+userRoutes.delete("/:id",
+    (req, res, next) => validates.validateToken(req, res, next),
+    (req, res) => controller.delete(req, res)
 )
