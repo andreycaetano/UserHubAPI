@@ -68,11 +68,11 @@ export class UserCore {
     }
 
     async updateUser(userId: number, data: IUpdateUser, decoded: any): Promise<IUserCreationResponse> {
-        if(decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
+        if (decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
         const findUser = await prisma.user.findFirst({ where: { id: userId } })
         if (!findUser) throw new AppErrors(404, "User not found.")
- 
-        
+
+
         let address = null
         if (data.address) {
             address = await ViaCep.getAddressByCep(data.address.cep);
@@ -80,14 +80,14 @@ export class UserCore {
 
         const userDataToUpdate: any = {};
         console.log(address);
-        
+
         if (data.address) {
             if (address) {
                 userDataToUpdate.address = {
                     update: {
                         ...(address.cep && { CEP: Number(data.address.cep) }),
                         ...(data.address.numberHouse && { numberHouse: Number(data.address.numberHouse) }),
-                        ...(data.address.complement ? { complement: data.address.complement } : {complement: ""}),
+                        ...(data.address.complement ? { complement: data.address.complement } : { complement: "" }),
                         ...(address.street && { street: address.street }),
                         ...(address.neighborhood && { neighborhood: address.neighborhood }),
                         ...(address.city && { city: address.city }),
@@ -129,9 +129,8 @@ export class UserCore {
     async login(data: TLogin) {
         const findUser = await prisma.user.findFirst({ where: { email: data.email } })
         if (!findUser) throw new AppErrors(401, "It seems there was an issue during the login process. Please verify your credentials and try again.")
-        bcrypt.compare(data.password, findUser.password, function (err, res) {
-            if (!res) throw new AppErrors(401, "It seems there was an issue during the login process. Please verify your credentials and try again.")
-        })
+        const hash = await bcrypt.compare(data.password, findUser.password)
+        if (!hash) throw new AppErrors(401, "It seems there was an issue during the login process. Please verify your credentials and try again.")
         const token = jwt.sign({
             userId: findUser.id,
             role: findUser.admin
@@ -146,10 +145,10 @@ export class UserCore {
         }
     }
 
-    async delete (userId: number, decoded: any) {
-        if(decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
+    async delete(userId: number, decoded: any) {
+        if (decoded.admin === false && decoded.id != userId) throw new AppErrors(401, "You are not authorized to perform this operation.")
         const findUser = await prisma.user.findFirst({ where: { id: userId } })
         if (!findUser) throw new AppErrors(404, "User not found.")
-        await prisma.user.delete({ where: { id: userId }})
+        await prisma.user.delete({ where: { id: userId } })
     }
 }
