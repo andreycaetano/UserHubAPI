@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "dev": "tsnd --env-file .env src/server.ts",
-    "start": "tsnd --env-file .env src/server.ts"
+    "start": "tsnd src/server.ts"
   },
   "keywords": [],
   "author": "",
