@@ -62,6 +62,21 @@ Instale as dependências
   npm install
 ```
 
+Crie o arquivo .env com base no .env.example
+
+```.env
+  DATABASE_URL=
+  PORT=
+  SECRET_HASH=
+  SECRET_KEY_TOKEN=
+```
+
+Faça a migration do prisma
+
+```bash
+  npx prisma migrate dev
+```
+
 Inicie o servidor
 
 ```bash
